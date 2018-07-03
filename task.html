@@ -11,7 +11,7 @@
 
 Мячиков: <input type=text id=BC value=10>
 <input type=button value='Добавить' onclick='add()'>
-<input type=button value='Change' onclick='change()'>
+<input type=button value='Change' onclick='changeAll()'>
 <div onclick="change(event);" id=IField style='position: relative;
    border: solid red 1px; width: 400px; height: 400px'>
 </div>
@@ -36,7 +36,8 @@
     }
 
     function change(e) {
-        var node = e.target;
+        var node = e.target || e;
+        if(node.id === 'IField' )return;
         var coordNode = getComputedStyle(node);
         if (node.nodeName === "IMG") {
             var div = document.createElement('div');
@@ -56,6 +57,15 @@
         }
         else {
             return;
+        }
+    }
+
+    function changeAll(e) {
+        var items = document.getElementById('IField').childNodes;
+        for (var i = 0; i < items.length; i++) {
+            if (items[i].nodeType === 1 ) {
+                change(items[i]);
+            }
         }
     }
 
