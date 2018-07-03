@@ -1,0 +1,88 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>x</title>
+</head>
+
+<body ondragstart="dragstart(event)" onmousemove="dragClonedBall(event);" >
+<div style='border:solid red 1px;width:150px;height:150px'
+     ondrop="divDrop(event)"
+     ondragover="divDragOver(event)">
+</div>
+<br>
+<div style='border:solid blue 1px;width:150px;height:150px'
+     ondrop="divDrop(event)"
+     ondragover="divDragOver(event)">
+</div>
+<br>
+Этот текст не может быть перемещен в контейнер
+<img id=BALL src="http://fe.it-academy.by/Examples/ball3.png" onmouseup="dropBall(event)" >
+<img id=BALL2 src="http://fe.it-academy.by/Examples/ball3.png" onmouseup="dropBall(event)">
+<script>
+
+    "use strict";
+    var dragElem;
+    var clonedBall;
+    var coordCursor;
+    var coordObj;
+    function dragstart(e) {
+        if (e.target.nodeName === "IMG" && e.target.id.indexOf("BALL") === 0) {
+            // позволяем перемещать только мячики
+            dragElem = e.target;
+            clonedBall = dragElem.cloneNode(false);
+            clonedBall.removeAttribute('id');
+            dragElem.parentNode.appendChild(clonedBall);
+            dragElem.style.visibility="hidden";
+            coordCursor = {
+                x: e.clientX,
+                y: e.clientY
+            };
+            clonedBall.style.position = "absolute";
+            var styleObj = dragElem.getBoundingClientRect();
+            coordObj= {x: styleObj.left,
+                y: styleObj.top
+            };
+            clonedBall.style.top = styleObj.top;
+            clonedBall.style.left = styleObj.left;
+
+        } else {
+            dragElem = null;
+        }
+    }
+
+    function dropBall(e) {
+        clonedBall.parentNode.removeChild(clonedBall);
+        coordObj = {};
+        coordCursor = {};
+        dragElem.style.visibility = "visible";
+    }
+
+    function dragClonedBall(e) {
+        if(!clonedBall)return;
+        clonedBall.style.top = parseInt(coordObj.y) + (e.clientY - coordCursor.y) + "px";
+        clonedBall.style.left = parseInt(coordObj.x) + (e.clientX - coordCursor.x) + "px";
+        console.log({top: clonedBall.style.top, left: clonedBall.style.left});
+    }
+
+    function divDragOver(e) {
+        // по-умолчанию drag & drop отключем для всех элементов
+        // если не вызывать e.preventDefault, то событие drop не наступает вообще
+        e.preventDefault();
+    }
+
+    function divDrop(e) {
+        // отмена стандартного действия при перемещении элемента в окно браузера
+        e.preventDefault();
+        // this, e.target и e.currentTarget указывают на див, в который роняем мяч
+        // нужно использовать значение переменной dragElem, которая захватывает
+        // ссылку на перемещаемый элемент на этапе dragstart
+        if (!dragElem) return;
+        // appendChild отцепляет элемент DOM от его исходного родителя в DOM
+        // если такой есть автоматически
+        e.currentTarget.appendChild(dragElem);
+        dragElem = null; // переместили
+    }
+
+</script>
+</body>
+</html>
